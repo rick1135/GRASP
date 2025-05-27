@@ -9,32 +9,33 @@ public class Evento {
     private String descricao;
     private LocalDate dataInicio;
     private LocalDate dataFim;
-    private LocalDate dataSubmissaoInicio; //todo
-    private LocalDate dataSubmissaoFim; //todo
     private String local;
     private int capacidadeMaxima;
-    private static final int prazoCancelamento = 2; //dias antes do evento para cancelamento permitido
-    private List<Certificado> certificados;
+    private LocalDate dataInicioSubmissao;
+    private LocalDate dataFimSubmissao;
     private List<Inscricao> inscricoes;
-    private List<Trabalho> trabalhosSubmetidos;
-    private boolean iniciado; //indica se o evento já começou
+    private List<Trabalho> trabalhos;
+    private static final int PRAZO_CANCELAMENTO_DIAS = 2;
 
-
-    public Evento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, int prazoCancelamento) {
+    public Evento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao) {
         this.nome = nome;
         this.descricao = descricao;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.local = local;
         this.capacidadeMaxima = capacidadeMaxima;
-        this.prazoCancelamento = prazoCancelamento;
-        this.inscricoes = new ArrayList<>(); //todo
-        this.trabalhosSubmetidos = new ArrayList<>();
-        this.iniciado = false;
+        this.dataInicioSubmissao = dataInicioSubmissao;
+        this.dataFimSubmissao = dataFimSubmissao;
+        this.inscricoes = new ArrayList<>();
+        this.trabalhos = new ArrayList<>();
     }
 
     public String getNome() {
         return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getDescricao() {
@@ -57,66 +58,48 @@ public class Evento {
         return capacidadeMaxima;
     }
 
-    public int getPrazoCancelamento() {
-        return prazoCancelamento;
+    public LocalDate getDataInicioSubmissao() {
+        return dataInicioSubmissao;
     }
 
-    public List<Inscricao> getInscritos() {
+    public LocalDate getDataFimSubmissao() {
+        return dataFimSubmissao;
+    }
+
+    public List<Inscricao> getInscricoes() {
         return inscricoes;
     }
 
-    public List<Trabalho> getTrabalhosSubmetidos() {
-        return trabalhosSubmetidos;
+    public List<Trabalho> getTrabalhos() {
+        return trabalhos;
     }
 
-    public void iniciarEvento(){
-        this.iniciado=true;
+    public boolean temVaga(){
+        return inscricoes.size()<capacidadeMaxima;
     }
 
-    public boolean isIniciado(){
-        return iniciado;
-    }
+    public boolean adicionarInscricao(Inscricao inscricao){
+        if(!temVaga()) return false; //evento com capacidade maxima
 
-    public boolean isInscrito(Participante participante){
-        return inscricoes.contains(participante);
-    }
-
-    public boolean inscreverParticipante(Participante p, LocalDate dataAtual){
-        if(iniciado) return false; //proibido inscrição após inicio
-        if(estaCheio()) return false;
-        if(isInscrito(p)) return false;
-
-        inscricoes.add(p);
+        inscricoes.add(inscricao);
         return true;
     }
 
-//    public boolean cancelarInscricao(Participante participante, LocalDate dataAtual){
-//        if(iniciado) return false; //não pode cancelar após inicio
-//        if(!isInscrito(participante)) return false;
-//        LocalDate prazoCancelamentoData = dataInicio.minusDays(prazoCancelamento);
-//        if(dataAtual.isAfter(prazoCancelamentoData)) return false; //fora do prazo de cancelamento
-//
-//        inscricoes.remove(participante);
-//        return true;
-//    } todo
-
-    public boolean submeterTrabalho(Trabalho trabalho, Participante participante, LocalDate dataAtual, LocalDate inicioSubmissao, LocalDate fimSubmissao) {
-        if (!isInscrito(participante)) {
-            return false; //participante deve estar inscrito
-        }
-        if (dataAtual.isBefore(inicioSubmissao) || dataAtual.isAfter(fimSubmissao)) {
-            return false; //fora do período de submissão
-        }
-
-        trabalhosSubmetidos.add(trabalho);
-        return true;
+    public boolean removerInscricao(Inscricao inscricao){
+        return inscricoes.remove(inscricao);
     }
 
-    public int quantidadeInscritos(){
-        return inscricoes.size();
+    public boolean podeCancelarInscricao(LocalDate dataAtual){
+        LocalDate limiteCancelamento = dataInicio.minusDays(PRAZO_CANCELAMENTO_DIAS);
+        return dataAtual.isBefore(limiteCancelamento) || dataAtual.isEqual(limiteCancelamento);
     }
 
-    public boolean estaCheio(){
-        return inscricoes.size()>=capacidadeMaxima;
+    public boolean adicionarTrabalho(Trabalho trabalho){
+        return trabalhos.add(trabalho);
+    }
+
+    public boolean estaNoPeriodoSubmissao(LocalDate dataAtual){
+        return (dataAtual.isEqual(dataInicioSubmissao) || dataAtual.isAfter(dataInicioSubmissao))
+                && (dataAtual.isEqual(dataFimSubmissao) || dataAtual.isBefore(dataFimSubmissao));
     }
 }

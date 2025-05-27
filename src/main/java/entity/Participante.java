@@ -10,13 +10,15 @@ public class Participante {
     private String instituicao;
     private List<Inscricao> inscricoes;
     private List<Certificado> certificados;
-    tste
+    private List<Trabalho> trabalhos;
 
     public Participante(String nome, String email, String instituicao) {
         this.nome = nome;
         this.email = email;
         this.instituicao = instituicao;
         this.inscricoes = new ArrayList<>();
+        this.certificados = new ArrayList<>();
+        this.trabalhos = new ArrayList<>();
     }
 
     public String getNome() {
@@ -47,52 +49,41 @@ public class Participante {
         return inscricoes;
     }
 
-    public void setInscricoes(List<Inscricao> inscricoes) {
-        this.inscricoes = inscricoes;
+    public List<Certificado> getCertificados() {
+        return certificados;
     }
 
-    public boolean isInscritoEmEvento(Evento evento){
-        for (Inscricao i : inscricoes) {
-            if(i.getEvento().equals(evento))
-                return true; //já está inscrito
-        }
-        return false; //não está
+    public List<Trabalho> getTrabalhos() {
+        return trabalhos;
     }
 
-    public boolean inscreverEvento(Evento evento, LocalDate dataAtual){
-        if(isInscritoEmEvento(evento)){
-            return false; //proibido se inscrever 2x no msm evento
-        }
-        if(!evento.inscreverParticipante(this, dataAtual)){
-            return false; //verifica se a inscrição foi confirmada no evento
-        }
-        Inscricao novaInscricao = new Inscricao(this, evento);
-        inscricoes.add(novaInscricao);
-        return true;
-    }
-
-    public boolean cancelarInscricao(Evento evento, LocalDate dataAtual) {
-        for (Inscricao inscricao : inscricoes) {
-            if (inscricao.getEvento().equals(evento)) {
-                long diasRestantes = evento.getDataInicio().until(dataAtual, java.time.temporal.ChronoUnit.DAYS);
-                if (diasRestantes < 2) {
-                    return false;  //proibido cancelar a menos de 2 dias antes do evento
-                }
-                inscricoes.remove(inscricao);
-                evento.cancelarInscricao(this, dataAtual);
-                return true;
-            }
-        }
-        return false;  //participante não está inscrito no evento
-    }
-
-    public boolean adicionarTrabalho(Trabalho trabalho, Evento evento) {
-        if (isInscritoEmEvento(evento)) {
-            trabalho.setAutor(this);
-            evento.submeterTrabalho(trabalho, this, LocalDate.now(), evento.getDataInicio(), evento.getDataFim());
+    public boolean inscreverEvento(Evento evento){
+        if (evento.temVaga()) {
+            Inscricao inscricao = new Inscricao(this, evento);
+            boolean inscrito = evento.adicionarInscricao(inscricao);
             return true;
         }
         return false;
     }
 
+    public boolean cancelarInscricao(Evento evento, LocalDate dataAtual) {
+        for (Inscricao inscricao : inscricoes) {
+            if (inscricao.getEvento().equals(evento)) {
+                if(evento.podeCancelarInscricao(dataAtual)){
+                    inscricoes.remove(inscricao);
+                    evento.removerInscricao(inscricao);
+                    return true;
+                }
+            }
+        }
+        return false;  //participante não está inscrito no evento ou prazo expirado
+    }
+
+    public void adicionarTrabalho(Trabalho trabalho){
+        trabalhos.add(trabalho);
+    }
+
+    public void adicionarCertificado(Certificado certificado){
+        certificados.add(certificado);
+    }
 }

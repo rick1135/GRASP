@@ -10,6 +10,7 @@ public class Participante {
     private String instituicao;
     private List<Inscricao> inscricoes;
     private List<Certificado> certificados;
+    tste
 
     public Participante(String nome, String email, String instituicao) {
         this.nome = nome;

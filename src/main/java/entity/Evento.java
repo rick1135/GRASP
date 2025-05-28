@@ -1,8 +1,7 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Evento {
     private String nome;
@@ -67,11 +66,11 @@ public class Evento {
     }
 
     public List<Inscricao> getInscricoes() {
-        return inscricoes;
+        return Collections.unmodifiableList(inscricoes);
     }
 
     public List<Trabalho> getTrabalhos() {
-        return trabalhos;
+        return Collections.unmodifiableList(trabalhos);
     }
 
     public int getPrazoCancelamentoDias() {return PRAZO_CANCELAMENTO_DIAS;}
@@ -81,8 +80,8 @@ public class Evento {
     }
 
     public boolean adicionarInscricao(Inscricao inscricao){
-        if(!temVaga()) return false; //evento com capacidade maxima
-
+        if(isEventoIniciado()) return false;
+        if(!podeInscrever(inscricao)) return false;
         inscricoes.add(inscricao);
         return true;
     }
@@ -97,6 +96,7 @@ public class Evento {
     }
 
     public boolean adicionarTrabalho(Trabalho trabalho){
+        if(trabalhos.contains(trabalho)) return false;
         return trabalhos.add(trabalho);
     }
 
@@ -104,4 +104,17 @@ public class Evento {
         return (dataAtual.isEqual(dataInicioSubmissao) || dataAtual.isAfter(dataInicioSubmissao))
                 && (dataAtual.isEqual(dataFimSubmissao) || dataAtual.isBefore(dataFimSubmissao));
     }
+
+    public boolean estaInscrito(Participante participante){
+        return inscricoes.stream().anyMatch(inscricao -> inscricao.getParticipante().equals(participante) && inscricao.isAtiva());
+    }
+
+    public boolean podeInscrever(Inscricao inscricao){
+        return !inscricoes.contains(inscricao) && temVaga();
+    }
+
+    public boolean isEventoIniciado() {
+        return LocalDate.now().isAfter(dataInicio) || LocalDate.now().isEqual(dataInicio);
+    }
+
 }

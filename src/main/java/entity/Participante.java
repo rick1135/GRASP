@@ -34,15 +34,15 @@ public class Participante {
     }
 
     public List<Inscricao> getInscricoes() {
-        return inscricoes;
+        return Collections.unmodifiableList(inscricoes);
     }
 
     public List<Certificado> getCertificados() {
-        return certificados;
+        return Collections.unmodifiableList(certificados);
     }
 
     public List<Trabalho> getTrabalhos() {
-        return trabalhos;
+        return Collections.unmodifiableList(trabalhos);
     }
 
     public void atualizarDados(String nome, String email, String instituicao) {
@@ -52,23 +52,31 @@ public class Participante {
     }
 
     public boolean adicionarInscricao(Inscricao inscricao){
+        if(inscricoes.contains(inscricao))
+            return false;
         this.inscricoes.add(inscricao);
         return true;
     }
 
     public boolean cancelarInscricao(Inscricao inscricao) {
         if(this.inscricoes.contains(inscricao)){
-            inscricao.cancelar();
-            return true;
+            boolean cancelado = inscricao.cancelar();
+            if(cancelado){
+                this.inscricoes.remove( inscricao);
+                return true;
+            }
         }
         return false;
     }
 
-    public void adicionarTrabalho(Trabalho trabalho){
+    public boolean adicionarTrabalho(Trabalho trabalho){
+        if(trabalhos.contains(trabalho))
+            return false;
         trabalhos.add(trabalho);
+        return true;
     }
 
-    public boolean removetrabalho(Trabalho trabalho){
+    public boolean removerTrabalho(Trabalho trabalho){
         if(this.trabalhos.contains(trabalho)){
             this.trabalhos.remove(trabalho);
             return true;
@@ -76,7 +84,40 @@ public class Participante {
         return false;
     }
 
-    public void adicionarCertificado(Certificado certificado){
+    public boolean adicionarCertificado(Certificado certificado){
+        if(certificados.contains(certificado))
+            return false;
         certificados.add(certificado);
+        return true;
     }
+
+    public boolean estaInscritoEmEvento(Evento evento){
+        return inscricoes.stream().anyMatch(inscricao -> inscricao.getEvento().equals(evento) && inscricao.isAtiva());
+    }
+
+    public boolean confirmarPresenca(String emailParticipante, String nomeEvento) {
+        Optional<Participante> participanteOpt = buscarParticipantePorEmail(emailParticipante);
+        Optional<Evento> eventoOpt = buscarEventoPorNome(nomeEvento);
+        if (participanteOpt.isPresent() && eventoOpt.isPresent()) {
+            Participante participante = participanteOpt.get();
+            Evento evento = eventoOpt.get();
+            Optional<Inscricao> inscricaoOpt = participante.getInscricoes().stream()
+                    .filter(i -> i.getEvento().equals(evento))
+                    .findFirst();
+            if (inscricaoOpt.isPresent()) {
+                inscricaoOpt.get().confirmarPresenca();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<Inscricao> listarInscricoesEvento(String nomeEvento) {
+        Optional<Evento> eventoOpt = buscarEventoPorNome(nomeEvento);
+        if (eventoOpt.isPresent()) {
+            return eventoOpt.get().getInscricoes();
+        }
+        return new ArrayList<>();
+    }
+
 }

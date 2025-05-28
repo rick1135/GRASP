@@ -1,8 +1,7 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Organizador extends Participante{
     private List<Evento> eventosCriados;
@@ -12,13 +11,13 @@ public class Organizador extends Participante{
         this.eventosCriados = new ArrayList<>();
     }
 
-    public Evento criarEvento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, int prazoCancelamento){
-        Evento evento = new Evento(nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, prazoCancelamento);
+    public Evento criarEvento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao){
+        Evento evento = new Evento(nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, dataInicioSubmissao, dataFimSubmissao);
         eventosCriados.add(evento);
         return evento;
     }
 
-    public List<Evento> getEventosCriados(){
-        return eventosCriados;
+    public List<Evento> getEventosCriados() {
+        return Collections.unmodifiableList(eventosCriados);
     }
 }

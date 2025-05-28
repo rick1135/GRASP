@@ -4,17 +4,23 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class Inscricao {
+    public enum StatusInscricao{
+        ATIVA,
+        CANCELADA,
+        CONFIRMADA
+    }
+
     private final Participante participante;
     private final Evento evento;
     private final LocalDate dataInscricao;
-    private String status;
+    private StatusInscricao status;
     private boolean presencaConfirmada;
 
     public Inscricao(Participante participante, Evento evento) {
         this.participante = participante;
         this.evento = evento;
         this.dataInscricao = LocalDate.now();
-        this.status = "ativa";
+        this.status = StatusInscricao.ATIVA;
         this.presencaConfirmada = false;
     }
 
@@ -30,7 +36,7 @@ public class Inscricao {
         return dataInscricao;
     }
 
-    public String getStatus() {
+    public StatusInscricao getStatus() {
         return status;
     }
 
@@ -38,19 +44,18 @@ public class Inscricao {
         return presencaConfirmada;
     }
 
-        public boolean cancelar(){
-        long diasRest = ChronoUnit.DAYS.between(LocalDate.now(), evento.getDataInicio());
-        if(diasRest < evento.getPrazoCancelamentoDias()){
+    public boolean cancelar(){
+        LocalDate limiteCancelamento = evento.getDataInicio().minusDays(evento.getPrazoCancelamentoDias());
+        if(!LocalDate.now().isBefore(limiteCancelamento))
             return false;
-        }
-        this.status = "cancelada";
+        this.status = StatusInscricao.CANCELADA;
         return true;
     }
 
     public void confirmarPresenca(){
-        if(status.equals("ativa")){
+        if(status==StatusInscricao.ATIVA){
             this.presencaConfirmada = true;
-            this.status = "confirmada";
+            this.status = StatusInscricao.CONFIRMADA;
         }
     }
 
@@ -59,6 +64,6 @@ public class Inscricao {
     }
 
     public boolean isAtiva(){
-        return status.equals("ativa");
+        return status==StatusInscricao.ATIVA;
     }
 }

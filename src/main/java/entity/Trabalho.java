@@ -1,26 +1,32 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Trabalho {
+    public enum StatusTrabalho{
+        SUBMETIDO,
+        APROVADO,
+        REPROVADO
+    }
+
     private String titulo;
     private String arquivo; //nome ou caminho para facilitar
     private List<Participante> autores;
-    //falta status
     private Evento evento;
     private List<Avaliacao> avaliacoes;
     private double notaFinal;
+    private StatusTrabalho status;
 
     public Trabalho(String titulo, Participante autor, Evento evento, String arquivo) {
         this.titulo = titulo;
         this.autores = new ArrayList<>();
+        adicionarAutor(autor);
         this.evento = evento;
         this.arquivo = arquivo;
         this.avaliacoes = new ArrayList<>();
         this.notaFinal = 0.0;
+        this.status = StatusTrabalho.SUBMETIDO;
     }
 
     public String getTitulo() {
@@ -28,11 +34,16 @@ public class Trabalho {
     }
 
     public List<Participante> getAutores() {
-        return autores;
+        return Collections.unmodifiableList(autores);
     }
 
-    public void setAutor(Participante autor) {
+    public List<Avaliacao> getAvaliacoes() {
+        return Collections.unmodifiableList(avaliacoes);
+    }
 
+    public void adicionarAutor(Participante autor){
+        if(autor!=null && !autores.contains(autor))
+            autores.add(autor);
     }
 
     public Evento getEvento() {
@@ -43,17 +54,21 @@ public class Trabalho {
         return arquivo;
     }
 
-    public List<Avaliacao> getAvaliacoes() {
-        return avaliacoes;
-    }
 
     public double getNotaFinal() {
         return notaFinal;
     }
 
-    private void adicionarAvaliacao(Avaliacao avaliacao){
-        avaliacoes.add(avaliacao);
-        atualizarNotaFinal();
+    public StatusTrabalho getStatus() {
+        return status;
+    }
+
+    public void adicionarAvaliacao(Avaliacao avaliacao){
+        if(avaliacao!=null) {
+            avaliacoes.add(avaliacao);
+            atualizarNotaFinal();
+            atualizarStatus();
+        }
     }
 
     private void atualizarNotaFinal(){
@@ -69,11 +84,15 @@ public class Trabalho {
         notaFinal = soma/avaliacoes.size();
     }
 
+    private void atualizarStatus(){
+        if(notaFinal>=7.0)
+            status = StatusTrabalho.APROVADO;
+        else
+            status = StatusTrabalho.REPROVADO;
+    }
+
     public boolean isAprovado(){
-        if(avaliacoes==null){
-            return false;
-        }
-        return notaFinal>=7.0;
+        return status==StatusTrabalho.APROVADO;
     }
 
     public boolean podeEmitirCertificadoApresentacao(){
@@ -86,6 +105,7 @@ public class Trabalho {
                 "titulo='" + titulo + '\'' +
                 ", autores=" + Arrays.toString(autores.toArray()) +
                 ", notaFinal=" + notaFinal +
+                ", status=" + status +
                 '}';
     }
 }

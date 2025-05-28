@@ -10,16 +10,23 @@ public class Avaliador extends Participante{
         this.trabalhosDesignados = new ArrayList<>();
     }
 
-    public boolean designarTrabalho(Trabalho trabalho, double nota, String parecer){
-        if(!trabalhosDesignados.contains(trabalho)){
+    public boolean designarTrabalho(Trabalho trabalho){
+        if(trabalho == null || trabalhosDesignados.contains(trabalho)){
             return false;
         }
-        Avaliacao avaliacao = new Avaliacao(nota, parecer, this);
-        trabalho.setAvaliacao(avaliacao);
+        trabalhosDesignados.add(trabalho);
         return true;
     }
 
-    public List<Trabalho> getTrabalhosDesignados(){
-        return trabalhosDesignados;
+    public boolean registrarAvaliacao(Trabalho trabalho, double nota, String comentario){
+        if(!trabalhosDesignados.contains(trabalho))
+            return false;
+        Avaliacao avaliacao = new Avaliacao(this, trabalho, nota, comentario);
+        trabalho.adicionarAvaliacao(avaliacao);
+        return true;
+    }
+
+    public List<Trabalho> getTrabalhosDesignados() {
+        return Collections.unmodifiableList(trabalhosDesignados);
     }
 }

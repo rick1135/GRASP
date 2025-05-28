@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.Objects;
+
 public class Avaliacao {
     private Avaliador avaliador;
     private Trabalho trabalho;
@@ -7,6 +9,8 @@ public class Avaliacao {
     private String comentario;
 
     public Avaliacao(Avaliador avaliador, Trabalho trabalho, double nota, String comentario) {
+        if(avaliador==null) throw new IllegalArgumentException("Avaliador não pode ser nulo");
+        if(trabalho==null) throw new IllegalArgumentException("Trabalho não pode ser nulo");
         if(nota<0 || nota>10)
             throw new IllegalArgumentException("Nota deve ser entre 0 e 10");
         this.avaliador = avaliador;
@@ -27,14 +31,18 @@ public class Avaliacao {
         return nota;
     }
 
+    public void setNota(double nota) {
+        if(nota<0 || nota>10)
+            throw new IllegalArgumentException("Nota deve ser entre 0 e 10");
+        this.nota = nota;
+    }
+
     public String getComentario() {
         return comentario;
     }
 
-    public void setNota(double nota) {
-        if(nota<0 || nota>10)
-            throw new IllegalArgumentException("Neta deve ser entre 0 e 10");
-        this.nota = nota;
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
 
     @Override
@@ -45,5 +53,18 @@ public class Avaliacao {
                 ", nota=" + nota +
                 ", comentario='" + comentario + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Avaliacao)) return false;
+        Avaliacao that = (Avaliacao) o;
+        return avaliador.equals(that.avaliador) && trabalho.equals(that.trabalho);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(avaliador, trabalho);
     }
 }

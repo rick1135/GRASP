@@ -25,24 +25,12 @@ public class Participante {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getInstituicao() {
         return instituicao;
-    }
-
-    public void setInstituicao(String instituicao) {
-        this.instituicao = instituicao;
     }
 
     public List<Inscricao> getInscricoes() {
@@ -57,30 +45,35 @@ public class Participante {
         return trabalhos;
     }
 
-    public boolean inscreverEvento(Evento evento){
-        if (evento.temVaga()) {
-            Inscricao inscricao = new Inscricao(this, evento);
-            boolean inscrito = evento.adicionarInscricao(inscricao);
+    public void atualizarDados(String nome, String email, String instituicao) {
+        this.nome = nome;
+        this.email = email;
+        this.instituicao = instituicao;
+    }
+
+    public boolean adicionarInscricao(Inscricao inscricao){
+        this.inscricoes.add(inscricao);
+        return true;
+    }
+
+    public boolean cancelarInscricao(Inscricao inscricao) {
+        if(this.inscricoes.contains(inscricao)){
+            inscricao.cancelar();
             return true;
         }
         return false;
     }
 
-    public boolean cancelarInscricao(Evento evento, LocalDate dataAtual) {
-        for (Inscricao inscricao : inscricoes) {
-            if (inscricao.getEvento().equals(evento)) {
-                if(evento.podeCancelarInscricao(dataAtual)){
-                    inscricoes.remove(inscricao);
-                    evento.removerInscricao(inscricao);
-                    return true;
-                }
-            }
-        }
-        return false;  //participante não está inscrito no evento ou prazo expirado
-    }
-
     public void adicionarTrabalho(Trabalho trabalho){
         trabalhos.add(trabalho);
+    }
+
+    public boolean removetrabalho(Trabalho trabalho){
+        if(this.trabalhos.contains(trabalho)){
+            this.trabalhos.remove(trabalho);
+            return true;
+        }
+        return false;
     }
 
     public void adicionarCertificado(Certificado certificado){

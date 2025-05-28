@@ -1,22 +1,25 @@
 package entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Trabalho {
     private String titulo;
-    private Participante autor;
+    private String arquivo; //nome ou caminho para facilitar
+    private List<Participante> autores;
+    //falta status
     private Evento evento;
-    private String arquivo; //nome ou caminho
     private List<Avaliacao> avaliacoes;
     private double notaFinal;
 
     public Trabalho(String titulo, Participante autor, Evento evento, String arquivo) {
         this.titulo = titulo;
-        this.autor = autor;
+        this.autores = new ArrayList<>();
         this.evento = evento;
         this.arquivo = arquivo;
-        this.avaliacoes = new java.util.ArrayList<>();
+        this.avaliacoes = new ArrayList<>();
         this.notaFinal = 0.0;
     }
 
@@ -24,12 +27,12 @@ public class Trabalho {
         return titulo;
     }
 
-    public Participante getAutor() {
-        return autor;
+    public List<Participante> getAutores() {
+        return autores;
     }
 
     public void setAutor(Participante autor) {
-        this.autor = autor;
+
     }
 
     public Evento getEvento() {
@@ -67,7 +70,7 @@ public class Trabalho {
     }
 
     public boolean isAprovado(){
-        if(avaliacao==null){
+        if(avaliacoes==null){
             return false;
         }
         return notaFinal>=7.0;
@@ -81,7 +84,7 @@ public class Trabalho {
     public String toString() {
         return "Trabalho{" +
                 "titulo='" + titulo + '\'' +
-                ", autor=" + autor +
+                ", autores=" + Arrays.toString(autores.toArray()) +
                 ", notaFinal=" + notaFinal +
                 '}';
     }

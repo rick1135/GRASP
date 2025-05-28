@@ -15,7 +15,7 @@ public class Evento {
     private LocalDate dataFimSubmissao;
     private List<Inscricao> inscricoes;
     private List<Trabalho> trabalhos;
-    private static final int PRAZO_CANCELAMENTO_DIAS = 2;
+    private final int PRAZO_CANCELAMENTO_DIAS = 2;
 
     public Evento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao) {
         this.nome = nome;
@@ -73,6 +73,8 @@ public class Evento {
     public List<Trabalho> getTrabalhos() {
         return trabalhos;
     }
+
+    public int getPrazoCancelamentoDias() {return PRAZO_CANCELAMENTO_DIAS;}
 
     public boolean temVaga(){
         return inscricoes.size()<capacidadeMaxima;

@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class Inscricao {
-    private Participante participante;
-    private Evento evento;
-    private LocalDate dataInscricao;
+    private final Participante participante;
+    private final Evento evento;
+    private final LocalDate dataInscricao;
     private String status;
     private boolean presencaConfirmada;
 
@@ -40,8 +40,8 @@ public class Inscricao {
 
         public boolean cancelar(){
         long diasRest = ChronoUnit.DAYS.between(LocalDate.now(), evento.getDataInicio());
-        if(diasRest<2){
-            return false; //cancelamento somente até 2 dias antes
+        if(diasRest < evento.getPrazoCancelamentoDias()){
+            return false;
         }
         this.status = "cancelada";
         return true;

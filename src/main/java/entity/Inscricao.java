@@ -38,14 +38,14 @@ public class Inscricao {
         return presencaConfirmada;
     }
 
-    public boolean cancelar(){
-        long diasRest = ChronoUnit.DAYS.between(LocalDate.now(), evento.getDataInicio());
-        if(diasRest<2){
-            return false; //cancelamento somente até 2 dias antes
-        }
-        this.status = "cancelada";
-        return true;
-    }
+//    public boolean cancelar(){
+//        long diasRest = ChronoUnit.DAYS.between(LocalDate.now(), evento.getDataInicio());
+//        if(diasRest<2){
+//            return false;
+//        }
+//        this.status = "cancelada";
+//        return true;
+//    }
 
     public void confirmarPresenca(){
         if(status.equals("ativa")){

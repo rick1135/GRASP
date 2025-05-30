@@ -41,16 +41,32 @@ public class Evento {
         return descricao;
     }
 
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     public LocalDate getDataInicio() {
         return dataInicio;
+    }
+
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
     }
 
     public LocalDate getDataFim() {
         return dataFim;
     }
 
+    public void setDataFim(LocalDate dataFim) {
+        this.dataFim = dataFim;
+    }
+
     public String getLocal() {
         return local;
+    }
+
+    public void setLocal(String local) {
+        this.local = local;
     }
 
     public int getCapacidadeMaxima() {
@@ -115,6 +131,10 @@ public class Evento {
 
     public boolean isEventoIniciado() {
         return LocalDate.now().isAfter(dataInicio) || LocalDate.now().isEqual(dataInicio);
+    }
+
+    public boolean isCapacidadeDisponivel() {
+        return this.getInscricoes().size() < this.getCapacidadeMaxima();
     }
 
 }

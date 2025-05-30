@@ -15,12 +15,26 @@ public class ParticipanteService {
         this.participantes = new ArrayList<>();
     }
 
-    public boolean cadastrarParticipante(Participante participante){
-        if(participante==null || buscarParticipantePorEmail(participante.getEmail()).isPresent()){
-            return false;
+    public Participante cadastrarParticipante(String name, String email, String instituicao){
+        if (name == null || name.trim().length() < 3) {
+            throw new IllegalArgumentException("Nome deve ter ao menos 3 caracteres.");
         }
+
+        if (name.matches(".*\\d.*")) {
+            throw new IllegalArgumentException("Nome não deve conter números.");
+        }
+
+        if (email == null || !email.contains("@") || !email.contains(".")) {
+            throw new IllegalArgumentException("Email inválido.");
+        }
+
+        if (instituicao == null || instituicao.trim().length() < 3) {
+            throw new IllegalArgumentException("Instituição deve ter ao menos 3 letras.");
+        }
+
+        Participante participante = new Participante(name, email, instituicao);
         participantes.add(participante);
-        return true;
+        return participante;
     }
 
     public Optional<Participante> buscarParticipantePorEmail(String email){

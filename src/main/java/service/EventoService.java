@@ -13,12 +13,11 @@ public class EventoService {
         this.eventos = new ArrayList<>();
     }
 
-    public boolean criarEvento(Evento evento){
+    public void criarEvento(Evento evento) throws Exception {
         if(evento == null || buscarEventoPornome(evento.getNome()).isPresent()){
-            return false; //evento inválido ou já criado
+            throw new Exception("Evento inválido ou já criado!");
         }
         eventos.add(evento);
-        return true;
     }
 
     public List<Evento> listarEventos(){

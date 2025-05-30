@@ -62,7 +62,7 @@ public class Participante {
         if(this.inscricoes.contains(inscricao)){
             boolean cancelado = inscricao.cancelar();
             if(cancelado){
-                this.inscricoes.remove( inscricao);
+                this.inscricoes.remove(inscricao);
                 return true;
             }
         }

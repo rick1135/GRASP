@@ -13,34 +13,38 @@ public class InscricaoService {
     public InscricaoService(){
         this.inscricoes = new ArrayList<>();
     }
-    public boolean criarInscricao(Participante participante, Evento evento){
-        if(participante == null || evento == null) return false;
+
+    public void criarInscricao(Participante participante, Evento evento) throws Exception {
+        if(participante == null || evento == null)
+            throw new IllegalArgumentException("Os dados não podem ser nulos!");
+
         boolean jaInscrito = participante.isInscritoEmEvento(evento);
 
-        if(jaInscrito) return false;
+        if(jaInscrito)
+            throw new Exception("Usuario ja inscrito!");
 
         Inscricao inscricao = new Inscricao(participante, evento);
         inscricoes.add(inscricao);
         participante.adicionarInscricao(inscricao);
         evento.adicionarInscricao(inscricao);
-        return true;
     }
 
-    public boolean cancelarInscricao(Inscricao inscricao){
-        if(inscricao==null) return false;
+    public void cancelarInscricao(Inscricao inscricao) throws Exception {
+        if(inscricao==null)
+            throw new IllegalArgumentException("Os dados não podem ser nulos!");
 
         boolean cancelado = inscricao.getParticipante().cancelarInscricao(inscricao);
 
-        if(cancelado){
-            inscricao.getEvento().removerInscricao(inscricao);
-            inscricao.getParticipante().cancelarInscricao(inscricao);
-        }
-        return cancelado;
+        if(!cancelado)
+            throw new Exception("Inscrição nao encontrada ou esta fora do prazo de cancelamento!");
+
+        inscricao.getEvento().removerInscricao(inscricao);
+        inscricao.getParticipante().cancelarInscricao(inscricao);
     }
 
-    public boolean confirmarPresenca(Inscricao inscricao){
+    public boolean confirmarPresenca(Inscricao inscricao) throws Exception {
         if(inscricao==null || !inscricao.isAtiva())
-            return false;
+            throw new Exception("Inscrição não encontrada, cancelada ou ja foi confirmada!");
 
         inscricao.confirmarPresenca();
         return true;

@@ -4,14 +4,17 @@ import entity.Avaliador;
 import entity.Evento;
 import entity.Inscricao;
 import entity.Organizador;
+import repository.EventoRepository;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class EventoService {
     private List<Evento> eventos;
+    private final EventoRepository eventoRepository;
 
-    public EventoService(){
+    public EventoService(EventoRepository eventoRepository){
+        this.eventoRepository = eventoRepository;
         this.eventos = new ArrayList<>();
     }
 
@@ -23,10 +26,10 @@ public class EventoService {
     }
 
     public List<Evento> listarEventos(){
-        if(eventos.isEmpty()){
+        if(eventoRepository.listarEventos().isEmpty()){
             return new ArrayList<>();
         }
-        return new ArrayList<>(eventos);
+        return eventoRepository.listarEventos();
     }
 
     public Optional<Evento> buscarEventoPornome(String nome){

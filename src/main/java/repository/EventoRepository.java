@@ -14,8 +14,7 @@ public class EventoRepository {
     public void salvar(Evento evento) {
         Optional<Evento> existente = listarPorNome(evento.getNome());
         if (existente.isPresent())
-            eventos.remove(existente.get());
-
+            throw new ArrayStoreException("O particpante já está cadastrado");
         eventos.add(evento);
     }
 
@@ -30,6 +29,9 @@ public class EventoRepository {
     }
 
     public void remover(Evento evento) {
+        if(!eventos.contains(evento))
+            throw new ArrayStoreException("Evento não cadadstrado!");
+
         eventos.remove(evento);
     }
 }

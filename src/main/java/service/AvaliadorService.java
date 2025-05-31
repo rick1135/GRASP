@@ -39,6 +39,7 @@ public class AvaliadorService {
         if(avaliador==null || trabalho==null)
             throw new IllegalArgumentException("Entradas nao podem ser nulos!");
 
+
         return avaliador.registrarAvaliacao(trabalho, nota, comentario);
     }
 

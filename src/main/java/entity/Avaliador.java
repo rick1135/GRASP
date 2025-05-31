@@ -20,7 +20,8 @@ public class Avaliador extends Participante{
 
     public boolean registrarAvaliacao(Trabalho trabalho, double nota, String comentario){
         if(!trabalhosDesignados.contains(trabalho))
-            return false;
+            throw new IllegalArgumentException("Avaliador não esta designado para este trabalho!");
+
         Avaliacao avaliacao = new Avaliacao(this, trabalho, nota, comentario);
         trabalho.adicionarAvaliacao(avaliacao);
         return true;

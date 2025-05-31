@@ -4,15 +4,16 @@ import entity.Evento;
 import entity.Inscricao;
 import entity.Participante;
 import entity.Trabalho;
+import repository.ParticipanteRepository;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class ParticipanteService {
-    private List<Participante> participantes;
+    private final ParticipanteRepository participanteRepository;
 
-    public ParticipanteService(){
-        this.participantes = new ArrayList<>();
+    public ParticipanteService(ParticipanteRepository participanteRepository){
+        this.participanteRepository = participanteRepository;
     }
 
     public Participante cadastrarParticipante(String name, String email, String instituicao){
@@ -33,12 +34,12 @@ public class ParticipanteService {
         }
 
         Participante participante = new Participante(name, email, instituicao);
-        participantes.add(participante);
+        participanteRepository.salvar(participante);
         return participante;
     }
 
     public Optional<Participante> buscarParticipantePorEmail(String email){
-        return participantes.stream()
+        return participanteRepository.listarParticipantes().stream()
                 .filter(p -> p.getEmail().equalsIgnoreCase(email))
                 .findFirst();
     }

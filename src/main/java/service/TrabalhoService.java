@@ -14,16 +14,16 @@ public class TrabalhoService {
         this.trabalhos = new ArrayList<>();
     }
 
-    public boolean cadastrarTrabalho(String titulo, List<Participante> autores, Evento evento, String arquivo){
+    public Trabalho cadastrarTrabalho(String titulo, List<Participante> autores, Evento evento, String arquivo){
         if(titulo==null || autores==null || autores.isEmpty() || evento==null || arquivo==null) throw new IllegalArgumentException("Dados não podem ser nulos!");
 
         for(Participante autor : autores){
             if(!autor.isInscritoEmEvento(evento))
-                return false;
+                throw new IllegalStateException("Autor não esta inscrito no evento!");
         }
 
         Optional<Trabalho> existente = buscarTrabalhoPorTitulo(titulo);
-        if(existente.isPresent()) return false;
+        if(existente.isPresent()) throw new IllegalStateException("Trabalho já existe!");
 
         Trabalho trabalho = new Trabalho(titulo, autores.get(0), evento, arquivo);
 
@@ -38,7 +38,7 @@ public class TrabalhoService {
         }
         evento.adicionarTrabalho(trabalho);
 
-        return true;
+        return trabalho;
     }
 
     public Optional<Trabalho> buscarTrabalhoPorTitulo(String titulo){

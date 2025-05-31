@@ -14,9 +14,11 @@ public class Evento {
     private LocalDate dataFimSubmissao;
     private List<Inscricao> inscricoes;
     private List<Trabalho> trabalhos;
+    private List<Avaliador> avaliadores;
+    private Organizador organizador;
     private final int PRAZO_CANCELAMENTO_DIAS = 2;
 
-    public Evento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao) {
+    public Evento(String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local, int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao, Organizador organizador) {
         this.nome = nome;
         this.descricao = descricao;
         this.dataInicio = dataInicio;
@@ -27,6 +29,8 @@ public class Evento {
         this.dataFimSubmissao = dataFimSubmissao;
         this.inscricoes = new ArrayList<>();
         this.trabalhos = new ArrayList<>();
+        this.avaliadores = new ArrayList<>();
+        this.organizador = organizador;
     }
 
     public String getNome() {
@@ -86,7 +90,17 @@ public class Evento {
     }
 
     public List<Trabalho> getTrabalhos() {
+        if(trabalhos.isEmpty())
+            throw new NoSuchElementException("Não há trabalhos disponíveis para esse evento!");
         return Collections.unmodifiableList(trabalhos);
+    }
+
+    public List<Avaliador> getAvaliadores() {
+        return avaliadores;
+    }
+
+    public void setAvaliadores(List<Avaliador> avaliadores) {
+        this.avaliadores = avaliadores;
     }
 
     public int getPrazoCancelamentoDias() {return PRAZO_CANCELAMENTO_DIAS;}
@@ -137,4 +151,15 @@ public class Evento {
         return this.getInscricoes().size() < this.getCapacidadeMaxima();
     }
 
+    public void adicionarAvaliador(Avaliador avaliador){
+        avaliadores.add(avaliador);
+    }
+
+    public Organizador getOrganizador() {
+        return organizador;
+    }
+
+    public void setOrganizador(Organizador organizador) {
+        this.organizador = organizador;
+    }
 }

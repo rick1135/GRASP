@@ -3,30 +3,34 @@ package service;
 import entity.Evento;
 import entity.Inscricao;
 import entity.Participante;
+import repository.InscricaoRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InscricaoService {
-    private List<Inscricao> inscricoes;
+    private final InscricaoRepository inscricaoRepository;
 
     public InscricaoService(){
-        this.inscricoes = new ArrayList<>();
+        this.inscricaoRepository = new InscricaoRepository();
     }
 
     public void criarInscricao(Participante participante, Evento evento) throws Exception {
         if(participante == null || evento == null)
             throw new IllegalArgumentException("Os dados não podem ser nulos!");
 
-        boolean jaInscrito = participante.isInscritoEmEvento(evento);
+        if(!evento.temVaga())
+            throw new Exception("Evento sem vagas!");
 
-        if(jaInscrito)
+        if(participante.isInscritoEmEvento(evento))
             throw new Exception("Usuario ja inscrito!");
 
         Inscricao inscricao = new Inscricao(participante, evento);
-        inscricoes.add(inscricao);
+        inscricaoRepository.salvar(inscricao);
+
         participante.adicionarInscricao(inscricao);
         evento.adicionarInscricao(inscricao);
+
     }
 
     public void cancelarInscricao(Inscricao inscricao) throws Exception {
@@ -38,8 +42,8 @@ public class InscricaoService {
         if(!cancelado)
             throw new Exception("Inscrição nao encontrada ou esta fora do prazo de cancelamento!");
 
+        inscricao.getParticipante().removerInscricao(inscricao);
         inscricao.getEvento().removerInscricao(inscricao);
-        inscricao.getParticipante().cancelarInscricao(inscricao);
     }
 
     public boolean confirmarPresenca(Inscricao inscricao) throws Exception {
@@ -47,20 +51,24 @@ public class InscricaoService {
             throw new Exception("Inscrição não encontrada, cancelada ou ja foi confirmada!");
 
         inscricao.confirmarPresenca();
+        inscricaoRepository.salvar(inscricao);
         return true;
     }
 
     //lista inscricoes do participante
     public List<Inscricao> listarPorParticipante(Participante participante){
-        return inscricoes.stream()
-                .filter(i -> i.getParticipante().equals(participante))
-                .collect(Collectors.toList());
+        if(participante==null) return null;
+        return inscricaoRepository.encontrarPorParticipante(participante);
     }
 
     //lista inscricoes do evento
     public List<Inscricao> listarPorEvento(Evento evento){
-        return inscricoes.stream()
-                .filter(i -> i.getEvento().equals(evento))
-                .collect(Collectors.toList());
+        if(evento==null) return null;
+        return inscricaoRepository.encontrarPorEvento(evento);
+    }
+
+    public Optional<Inscricao> buscarInscricaoPorParticipanteEEvento(Participante participante, Evento evento){
+        if(participante==null || evento==null) return Optional.empty();
+        return inscricaoRepository.encontrarPorParticipanteEEvento(participante, evento);
     }
 }

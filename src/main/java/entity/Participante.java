@@ -120,4 +120,7 @@ public class Participante {
 //        return new ArrayList<>();
 //    }
 
+    public boolean removerInscricao(Inscricao inscricao){
+        return inscricoes.remove(inscricao);
+    }
 }

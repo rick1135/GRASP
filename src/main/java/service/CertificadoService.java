@@ -1,6 +1,7 @@
 package service;
 
 import entity.*;
+import repository.CertificadoRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,14 +10,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CertificadoService {
-    private List<Certificado> certificados;
-    private InscricaoService inscricaoService;
+    private final CertificadoRepository certificadoRepository;
     private TrabalhoService trabalhoService;
     private ParticipanteService participanteService;
 
-    public CertificadoService(InscricaoService inscricaoService, TrabalhoService trabalhoService, ParticipanteService participanteService) {
-        this.certificados = new ArrayList<>();
-        this.inscricaoService = inscricaoService;
+    public CertificadoService(CertificadoRepository certificadoRepository,TrabalhoService trabalhoService, ParticipanteService participanteService) {
+        this.certificadoRepository = certificadoRepository;
         this.trabalhoService = trabalhoService;
         this.participanteService = participanteService;
     }
@@ -26,7 +25,7 @@ public class CertificadoService {
             System.out.println("Erro: Participante, evento ou data de emissão não pode ser nulo");
             return null;
         }
-        if(!LocalDate.now().isAfter(evento.getDataFim())) {
+        if(!dataEmissao.isAfter(evento.getDataFim())) {
             System.out.println("Certificado só pode ser emitido após o fim do evento");
             return null;
         }
@@ -46,7 +45,7 @@ public class CertificadoService {
         }
 
         Certificado certificado = new Certificado(participante, evento, dataEmissao);
-        certificados.add(certificado);
+        certificadoRepository.salvar(certificado);
         participante.adicionarCertificado(certificado);
         System.out.println("Certificado emitido com sucesso para " + participante.getNome() + " no evento " + evento.getNome());
         return certificado;
@@ -63,7 +62,7 @@ public class CertificadoService {
             System.out.println("Certificado de apresentação só é emitido para trabalhos aprovados");
             return certificadosEmitidos;
         }
-        if(!LocalDate.now().isAfter(trabalho.getEvento().getDataFim())){
+        if(!dataEmissao.isAfter(trabalho.getEvento().getDataFim())){
             System.out.println("Certificado só é emitido após o fim do evento");
             return certificadosEmitidos;
         }
@@ -73,7 +72,7 @@ public class CertificadoService {
             if(autorOpt.isPresent()){
                 Participante autorRegistrado = autorOpt.get();
                 Certificado certificado = new Certificado(autorRegistrado, trabalho.getEvento(), trabalho, dataEmissao);
-                certificados.add(certificado);
+                certificadoRepository.salvar(certificado);
                 autor.adicionarCertificado(certificado);
                 certificadosEmitidos.add(certificado);
                 System.out.println("Certificado emitido com sucesso para " + autor.getNome() + " no evento " + trabalho.getEvento().getNome());
@@ -83,13 +82,11 @@ public class CertificadoService {
     }
 
     public List<Certificado> listarCertificadosEmitidos(){
-        return new ArrayList<>(certificados);
+        return certificadoRepository.listarCertificados();
     }
 
     public List<Certificado> listarCertificadosPorParticipante(Participante participante){
         if(participante==null) return new ArrayList<>();
-        return certificados.stream()
-                .filter(c -> c.getParticipante().equals(participante))
-                .collect(Collectors.toList());
+        return certificadoRepository.encontrarPorParticipante(participante);
     }
 }

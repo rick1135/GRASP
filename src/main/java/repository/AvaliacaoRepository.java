@@ -40,7 +40,7 @@ public class AvaliacaoRepository {
     }
 
     public List<Avaliacao> listarAvaliacoes(){
-        return new ArrayList<>(avaliacoes);
+        return Collections.unmodifiableList(avaliacoes);
     }
 
     public void remover(Avaliacao avaliacao){

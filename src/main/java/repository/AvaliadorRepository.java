@@ -25,7 +25,7 @@ public class AvaliadorRepository {
     }
 
     public List<Avaliador> listarAvaliadores(){
-        return new ArrayList<>(avaliadores);
+        return Collections.unmodifiableList(avaliadores);
     }
 
     public void remover(Avaliador avaliador){

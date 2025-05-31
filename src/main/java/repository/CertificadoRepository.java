@@ -10,7 +10,7 @@ public class CertificadoRepository {
     private List<Certificado> certificados;
 
     public CertificadoRepository() {
-        this.certificados = List.of();
+        this.certificados = new ArrayList<>();
     }
 
     public void salvar(Certificado certificado){
@@ -33,7 +33,7 @@ public class CertificadoRepository {
     }
 
     public List<Certificado> listarCertificados(){
-        return new ArrayList<>(certificados);
+        return Collections.unmodifiableList(certificados);
     }
 
     public void remover(Certificado certificado){

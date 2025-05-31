@@ -6,7 +6,6 @@ import entity.Trabalho;
 import repository.AvaliacaoRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AvaliacaoService {
     private final AvaliacaoRepository avaliacaoRepository;

@@ -22,7 +22,7 @@ public class Util {
         Avaliador avaliador = designarAvaliadorParatrabalho(sistema, evento, p1);
         avaliadorRegistraAvaliacao(sistema, avaliador, trabalho, evento);
         emitirCertificadoPresenca(sistema,evento,trabalho);
-
+        confirmaPresenca(sistema,evento);
 
     }
 

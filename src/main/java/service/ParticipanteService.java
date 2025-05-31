@@ -29,6 +29,12 @@ public class ParticipanteService {
             throw new IllegalArgumentException("Email inválido.");
         }
 
+        for(Participante p : participanteRepository.listarParticipantes()){
+            if(p.getEmail().equals(email)){
+                throw new IllegalArgumentException("Email já existente.");
+            }
+        }
+
         if (instituicao == null || instituicao.trim().length() < 3) {
             throw new IllegalArgumentException("Instituição deve ter ao menos 3 letras.");
         }

@@ -96,4 +96,11 @@ public class SistemaSGEAController {
         return cService.emitirCertificadoApresentacao(trabalho, dataEmissao);
     }
 
+    public Optional<Participante> buscarParticipantePorEmail(String email){
+        return pService.buscarParticipantePorEmail(email);
+    }
+
+    public List<Inscricao> listarInscricoes(String emailParticipante){
+        return pService.listarInscricoes(emailParticipante);
+    }
 }

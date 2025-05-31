@@ -1,6 +1,7 @@
 package controller;
 
 import entity.*;
+import repository.EventoRepository;
 import service.*;
 
 import java.time.LocalDate;
@@ -16,12 +17,12 @@ public class SistemaSGEAController {
     private final AvaliadorService aService;
     private final CertificadoService cService;
 
-    public SistemaSGEAController() {
+    public SistemaSGEAController(EventoRepository eventoRepository) {
         this.pService = new ParticipanteService();
         this.iService = new InscricaoService();
-        this.eService = new EventoService();
+        this.eService = new EventoService(eventoRepository);
         this.tService = new TrabalhoService();
-        this.oService = new OrganizadorService();
+        this.oService = new OrganizadorService(eventoRepository);
         this.aService = new AvaliadorService();
         this.cService = new CertificadoService(tService, pService);
     }
@@ -79,6 +80,10 @@ public class SistemaSGEAController {
     //VERIFICAR SE O FLUXO ESTA CORRETO
     public void registrarAvaliacao(Avaliador avaliador, Trabalho trabalho, double nota, String comentario){
         aService.registrarAvaliacao(avaliador, trabalho, nota, comentario);
+    }
+
+    public boolean designarTrabalho(Avaliador avaliador, Trabalho trabalho){
+        return aService.designarTrabalho(avaliador, trabalho);
     }
 
     //NAO ESTA SENDO VERIFICADA A PRESENÇA DO PARTICIPANTE

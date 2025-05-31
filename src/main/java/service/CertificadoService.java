@@ -27,7 +27,7 @@ public class CertificadoService {
             throw new IllegalStateException("Certificado só pode ser emitido após o fim do evento.");
         }
         Optional<Inscricao> inscricaoOpt = participante.getInscricoes().stream()
-                .filter(i -> i.getEvento().equals(evento) && i.isAtiva())
+                .filter(i -> i.getEvento().equals(evento) && (i.isAtiva() || i.isPresencaConfirmada()))
                 .findFirst();
 
         if (inscricaoOpt.isEmpty()) {
@@ -78,7 +78,6 @@ public class CertificadoService {
 
         return certificadosEmitidos;
     }
-
 
     public List<Certificado> listarCertificadosEmitidos(){
         return new ArrayList<>(certificados);

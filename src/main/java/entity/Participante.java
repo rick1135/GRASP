@@ -92,33 +92,8 @@ public class Participante {
     }
 
     public boolean isInscritoEmEvento(Evento evento){
-        return inscricoes.stream().anyMatch(inscricao -> inscricao.getEvento().equals(evento) && inscricao.isAtiva());
+        return inscricoes.stream().anyMatch(inscricao -> inscricao.getEvento().equals(evento) && inscricao.isAtiva() || inscricao.isPresencaConfirmada());
     }
-
-//    public boolean confirmarPresenca(String emailParticipante, String nomeEvento) {
-//        Optional<Participante> participanteOpt = buscarParticipantePorEmail(emailParticipante);
-//        Optional<Evento> eventoOpt = buscarEventoPorNome(nomeEvento);
-//        if (participanteOpt.isPresent() && eventoOpt.isPresent()) {
-//            Participante participante = participanteOpt.get();
-//            Evento evento = eventoOpt.get();
-//            Optional<Inscricao> inscricaoOpt = participante.getInscricoes().stream()
-//                    .filter(i -> i.getEvento().equals(evento))
-//                    .findFirst();
-//            if (inscricaoOpt.isPresent()) {
-//                inscricaoOpt.get().confirmarPresenca();
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-//    public List<Inscricao> listarInscricoesEvento(String nomeEvento) {
-//        Optional<Evento> eventoOpt = buscarEventoPorNome(nomeEvento);
-//        if (eventoOpt.isPresent()) {
-//            return eventoOpt.get().getInscricoes();
-//        }
-//        return new ArrayList<>();
-//    }
 
     public boolean removerInscricao(Inscricao inscricao){
         return inscricoes.remove(inscricao);

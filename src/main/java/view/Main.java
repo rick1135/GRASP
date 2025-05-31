@@ -2,12 +2,16 @@ package view;
 
 import controller.SistemaSGEAController;
 import entity.*;
+import repository.EventoRepository;
+
 import java.time.LocalDate;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        SistemaSGEAController sistema = new SistemaSGEAController();
+        EventoRepository eventoRepository = new EventoRepository();
+        SistemaSGEAController sistema = new SistemaSGEAController(eventoRepository);
+
 
         // UC1: Cadastro de participante
         System.out.println("UC1 - Cadastro de Participante");
@@ -32,7 +36,7 @@ public class Main {
                 hoje.plusDays(10),
                 hoje.plusDays(13),
                 "Auditório IFNMG",
-                2,
+                10,
                 hoje.plusDays(1),
                 hoje.plusDays(5)
         );
@@ -66,6 +70,9 @@ public class Main {
         // UC3: Participante submete trabalho
         System.out.println("\nUC3 - Participante submete trabalho");
         List<Participante> autores = Arrays.asList(p2, p3);
+        for (Participante autore : autores) {
+            System.out.println("Autor: " + autore.getNome());
+        }
         Trabalho trabalho = sistema.submeterTrabalho(
                 "Uso de GRASP em Projetos Java",
                 autores,
@@ -90,7 +97,9 @@ public class Main {
 
         // UC7: Avaliador registra avaliação
         System.out.println("\nUC7 - Avaliador registra avaliação");
+        sistema.designarTrabalho(avaliador, trabalho);
         sistema.registrarAvaliacao(avaliador, trabalho, 8.5, "Ótimo uso dos princípios GRASP!");
+
         System.out.println("Avaliação registrada para trabalho: " + trabalho.getTitulo());
 
         // Simula fim do evento para permitir emissão de certificados

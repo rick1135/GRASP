@@ -15,7 +15,6 @@ public class EventoRepository {
         Optional<Evento> existente = listarPorNome(evento.getNome());
         if (existente.isPresent())
             eventos.remove(existente.get());
-
         eventos.add(evento);
     }
 

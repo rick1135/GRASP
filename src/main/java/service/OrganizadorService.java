@@ -3,14 +3,17 @@ package service;
 import entity.Evento;
 import entity.Organizador;
 import entity.Participante;
+import repository.EventoRepository;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class OrganizadorService {
     private List<Organizador> organizadores;
+    private final EventoRepository eventoRepository;
 
-    public OrganizadorService() {
+    public OrganizadorService(EventoRepository eventoRepository) {
+        this.eventoRepository = eventoRepository;
         this.organizadores = new ArrayList<>();
     }
 
@@ -35,6 +38,7 @@ public class OrganizadorService {
             throw new IllegalArgumentException("Organizador não pode ser nulo!");
 
         Evento evento = organizador.criarEvento(nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, dataInicioSubmissao, dataFimSubmissao, organizador);
+        eventoRepository.salvar(evento);
         return evento;
     }
 

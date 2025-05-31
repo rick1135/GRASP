@@ -1,6 +1,7 @@
 package service;
 
 import entity.Avaliador;
+import entity.Participante;
 import entity.Trabalho;
 
 import java.util.*;
@@ -12,11 +13,13 @@ public class AvaliadorService {
         this.avaliadores = new ArrayList<>();
     }
 
-    public void cadastrarAvaliador(Avaliador avaliador) throws Exception {
-        if(avaliador==null || buscarAvaliadorPorEmail(avaliador.getEmail()).isPresent()){
+    public Avaliador cadastrarAvaliador(Participante participante) throws Exception {
+        if(participante==null ){ //buscar se avaliador ja esta cadastrado
             throw new Exception("Avaliador não encontrado!");
         }
+        Avaliador avaliador = new Avaliador(participante.getNome(), participante.getEmail(), participante.getInstituicao());
         avaliadores.add(avaliador);
+        return avaliador;
     }
 
     public Optional<Avaliador> buscarAvaliadorPorEmail(String email){

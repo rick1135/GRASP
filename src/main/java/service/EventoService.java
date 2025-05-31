@@ -1,7 +1,9 @@
 package service;
 
+import entity.Avaliador;
 import entity.Evento;
 import entity.Inscricao;
+import entity.Organizador;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -21,6 +23,9 @@ public class EventoService {
     }
 
     public List<Evento> listarEventos(){
+        if(eventos.isEmpty()){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(eventos);
     }
 
@@ -73,5 +78,9 @@ public class EventoService {
        evento.setDataFim(novaDataFim);
        evento.setLocal(novoLocal);
 
+    }
+
+    public void designarAvaliador(Evento evento, Avaliador avaliador){
+        evento.adicionarAvaliador(avaliador);
     }
 }

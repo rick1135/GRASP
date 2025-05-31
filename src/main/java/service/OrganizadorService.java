@@ -2,6 +2,7 @@ package service;
 
 import entity.Evento;
 import entity.Organizador;
+import entity.Participante;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -13,10 +14,13 @@ public class OrganizadorService {
         this.organizadores = new ArrayList<>();
     }
 
-    public void cadastrarOrganizador(Organizador organizador) throws Exception {
-        if(organizador==null || buscarOrganizadorPorEmail(organizador.getEmail()).isPresent())
+    public Organizador cadastrarOrganizador(Participante participante) throws Exception {
+        if(participante==null) //verificar se esse participante ja é organizador
             throw new Exception("Organizador não encontrado!");
+
+        Organizador organizador = new Organizador(participante.getNome(), participante.getEmail(), participante.getInstituicao());
         organizadores.add(organizador);
+        return organizador;
     }
 
     public Optional<Organizador> buscarOrganizadorPorEmail(String email){
@@ -30,7 +34,7 @@ public class OrganizadorService {
         if(organizador==null)
             throw new IllegalArgumentException("Organizador não pode ser nulo!");
 
-        Evento evento = organizador.criarEvento(nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, dataInicioSubmissao, dataFimSubmissao);
+        Evento evento = organizador.criarEvento(nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, dataInicioSubmissao, dataFimSubmissao, organizador);
         return evento;
     }
 

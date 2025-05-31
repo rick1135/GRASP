@@ -35,17 +35,17 @@ public class EventoService {
         return evento.isCapacidadeDisponivel();
     }
 
-    public boolean adicionarInscricao(Evento evento, Inscricao inscricao){
+    public boolean adicionarInscricao(Evento evento, Inscricao inscricao) throws Exception {
         if(evento == null || inscricao == null)
-            return false;
+            throw new Exception("Evento ou inscrição inválidos!");
         if(!podeInscrever(evento))
-            return false; //evento cheio
+            throw new Exception("Evento cheio!");
         return evento.getInscricoes().add(inscricao);
     }
 
-    public boolean removerInscricao(Evento evento, Inscricao inscricao){
+    public boolean removerInscricao(Evento evento, Inscricao inscricao) throws Exception {
         if(evento == null || inscricao == null)
-            return false;
+            throw new Exception("Evento ou inscrição inválidos!");
         return evento.removerInscricao(inscricao);
     }
 
@@ -57,21 +57,21 @@ public class EventoService {
                 (hoje.isEqual(evento.getDataFimSubmissao()) || hoje.isBefore(evento.getDataFimSubmissao()));
     }
 
-    public boolean editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal){
+    public void editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal) throws Exception {
        Optional<Evento> eventoOpt = buscarEventoPornome(nomeEvento);
-       if(eventoOpt.isPresent()){
-           Evento evento = eventoOpt.get();
-           if(LocalDate.now().isAfter(evento.getDataInicio()))
-               return false; //não pode editar após evento ter iniciado
-           if(novaDataInicio.isAfter(novaDataFim))
-               return false;
-           evento.setNome(novoNome);
-           evento.setDescricao(novaDescricao);
-           evento.setDataInicio(novaDataInicio);
-           evento.setDataFim(novaDataFim);
-           evento.setLocal(novoLocal);
-           return true;
+       if(!eventoOpt.isPresent()){
+           throw new Exception("Evento não encontrado!");
        }
-       return false;
+       Evento evento = eventoOpt.get();
+       if(LocalDate.now().isAfter(evento.getDataInicio()))
+           throw new Exception("Não é possível editar evento após seu início!");
+       if(novaDataInicio.isAfter(novaDataFim))
+           throw new Exception("Data inválida!");
+       evento.setNome(novoNome);
+       evento.setDescricao(novaDescricao);
+       evento.setDataInicio(novaDataInicio);
+       evento.setDataFim(novaDataFim);
+       evento.setLocal(novoLocal);
+
     }
 }

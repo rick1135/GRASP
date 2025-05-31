@@ -12,13 +12,11 @@ public class AvaliadorService {
         this.avaliadores = new ArrayList<>();
     }
 
-    public boolean cadastrarAvaliador(Avaliador avaliador){
+    public void cadastrarAvaliador(Avaliador avaliador) throws Exception {
         if(avaliador==null || buscarAvaliadorPorEmail(avaliador.getEmail()).isPresent()){
-            return false;
+            throw new Exception("Avaliador não encontrado!");
         }
-
         avaliadores.add(avaliador);
-        return true;
     }
 
     public Optional<Avaliador> buscarAvaliadorPorEmail(String email){
@@ -28,19 +26,22 @@ public class AvaliadorService {
     }
 
     public boolean designarTrabalho(Avaliador avaliador, Trabalho trabalho){
-        if(avaliador==null || trabalho==null) return false;
+        if(avaliador==null || trabalho==null)
+            throw new IllegalArgumentException("Entradas nao podem ser nulos!");
 
         return avaliador.designarTrabalho(trabalho);
     }
 
     public boolean registrarAvaliacao(Avaliador avaliador, Trabalho trabalho, double nota, String comentario){
-        if(avaliador==null || trabalho==null) return false;
+        if(avaliador==null || trabalho==null)
+            throw new IllegalArgumentException("Entradas nao podem ser nulos!");
 
         return avaliador.registrarAvaliacao(trabalho, nota, comentario);
     }
 
     public List<Trabalho> listarTrabalhosDesignador(Avaliador avaliador){
-        if(avaliador==null) return Collections.emptyList();
+        if(avaliador==null)
+            throw new IllegalArgumentException("Entradas nao podem ser nulos!");
         return avaliador.getTrabalhosDesignados();
     }
 }

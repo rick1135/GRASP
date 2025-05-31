@@ -15,7 +15,7 @@ public class TrabalhoService {
     }
 
     public boolean cadastrarTrabalho(String titulo, List<Participante> autores, Evento evento, String arquivo){
-        if(titulo==null || autores==null || autores.isEmpty() || evento==null || arquivo==null) return false;
+        if(titulo==null || autores==null || autores.isEmpty() || evento==null || arquivo==null) throw new IllegalArgumentException("Dados não podem ser nulos!");
 
         for(Participante autor : autores){
             if(!autor.isInscritoEmEvento(evento))
@@ -28,7 +28,7 @@ public class TrabalhoService {
         Trabalho trabalho = new Trabalho(titulo, autores.get(0), evento, arquivo);
 
         for(int i=1; i<autores.size(); i++){
-        			trabalho.adicionarAutor(autores.get(i));
+            trabalho.adicionarAutor(autores.get(i));
         }
 
         trabalhos.add(trabalho);

@@ -10,8 +10,8 @@ import java.util.List;
 public class InscricaoController {
     private final InscricaoService service;
 
-    public InscricaoController(InscricaoService service) {
-        this.service = service;
+    public InscricaoController() {
+        this.service = new InscricaoService();
     }
 
     public void criarInscricao(Participante participante, Evento evento) throws Exception {

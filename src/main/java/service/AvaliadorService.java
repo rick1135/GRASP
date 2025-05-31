@@ -2,50 +2,46 @@ package service;
 
 import entity.Avaliador;
 import entity.Trabalho;
-import repository.AvaliadorRepository;
 
 import java.util.*;
 
 public class AvaliadorService {
-    private final AvaliadorRepository avaliadorRepository;
+    private List<Avaliador> avaliadores;
 
     public AvaliadorService() {
-        this.avaliadorRepository = new AvaliadorRepository();
+        this.avaliadores = new ArrayList<>();
     }
 
-    public boolean cadastrarAvaliador(Avaliador avaliador){
-        if(avaliador==null || avaliadorRepository.encontrarPorEmail(avaliador.getEmail()).isPresent()){
-            return false;
+    public void cadastrarAvaliador(Avaliador avaliador) throws Exception {
+        if(avaliador==null || buscarAvaliadorPorEmail(avaliador.getEmail()).isPresent()){
+            throw new Exception("Avaliador não encontrado!");
         }
-
-        avaliadorRepository.salvar(avaliador);
-        return true;
+        avaliadores.add(avaliador);
     }
 
     public Optional<Avaliador> buscarAvaliadorPorEmail(String email){
-        return avaliadorRepository.encontrarPorEmail(email);
+        return avaliadores.stream()
+                .filter(a -> a.getEmail().equals(email))
+                .findFirst();
     }
 
     public boolean designarTrabalho(Avaliador avaliador, Trabalho trabalho){
-        if(avaliador==null || trabalho==null) return false;
+        if(avaliador==null || trabalho==null)
+            throw new IllegalArgumentException("Entradas nao podem ser nulos!");
 
-        boolean designado = avaliador.designarTrabalho(trabalho);
-        if(designado)
-            avaliadorRepository.salvar(avaliador);
-        return designado;
+        return avaliador.designarTrabalho(trabalho);
     }
 
     public boolean registrarAvaliacao(Avaliador avaliador, Trabalho trabalho, double nota, String comentario){
-        if(avaliador==null || trabalho==null) return false;
+        if(avaliador==null || trabalho==null)
+            throw new IllegalArgumentException("Entradas nao podem ser nulos!");
 
-        boolean registrado = avaliador.registrarAvaliacao(trabalho, nota, comentario);
-        if(registrado)
-            avaliadorRepository.salvar(avaliador);
-        return registrado;
+        return avaliador.registrarAvaliacao(trabalho, nota, comentario);
     }
 
     public List<Trabalho> listarTrabalhosDesignador(Avaliador avaliador){
-        if(avaliador==null) return Collections.emptyList();
+        if(avaliador==null)
+            throw new IllegalArgumentException("Entradas nao podem ser nulos!");
         return avaliador.getTrabalhosDesignados();
     }
 }

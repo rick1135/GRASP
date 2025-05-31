@@ -4,14 +4,15 @@ import entity.Evento;
 import entity.Inscricao;
 import service.EventoService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public class EventoController {
     private final EventoService service;
 
-    public EventoController(EventoService service) {
-        this.service = service;
+    public EventoController() {
+        this.service = new EventoService();
     }
 
     public void criarEvento(Evento evento) throws Exception {
@@ -26,13 +27,16 @@ public class EventoController {
         return service.buscarEventoPornome(name);
     }
 
-    public boolean inscrever(Inscricao inscricao) {
-        if(!service.podeInscrever(inscricao.getEvento()))
-            return false;
+    public void adicionarInscricao(Evento evento, Inscricao inscricao) throws Exception {
+        service.adicionarInscricao(evento, inscricao);
+    }
 
-        InscricaoController inscricao = new InscricaoController();
+    public void removerInscricao(Evento evento, Inscricao inscricao) throws Exception {
+        service.removerInscricao(evento, inscricao);
+    }
 
-        return true;
+    public void editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal) throws Exception {
+        service.editarEvento(nomeEvento, novoNome, novaDescricao, novaDataInicio, novaDataFim, novoLocal);
     }
 
 }

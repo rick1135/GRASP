@@ -13,11 +13,10 @@ public class OrganizadorService {
         this.organizadores = new ArrayList<>();
     }
 
-    public boolean cadastrarOrganizador(Organizador organizador){
+    public void cadastrarOrganizador(Organizador organizador) throws Exception {
         if(organizador==null || buscarOrganizadorPorEmail(organizador.getEmail()).isPresent())
-            return false;
+            throw new Exception("Organizador não encontrado!");
         organizadores.add(organizador);
-        return true;
     }
 
     public Optional<Organizador> buscarOrganizadorPorEmail(String email){
@@ -29,7 +28,7 @@ public class OrganizadorService {
     public Evento criarEvento(Organizador organizador, String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local,
                                int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao){
         if(organizador==null)
-            return null;
+            throw new IllegalArgumentException("Organizador não pode ser nulo!");
 
         Evento evento = organizador.criarEvento(nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, dataInicioSubmissao, dataFimSubmissao);
         return evento;

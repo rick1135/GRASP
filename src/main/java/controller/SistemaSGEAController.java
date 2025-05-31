@@ -2,6 +2,7 @@ package controller;
 
 import entity.*;
 import repository.EventoRepository;
+import repository.ParticipanteRepository;
 import service.*;
 
 import java.time.LocalDate;
@@ -17,8 +18,8 @@ public class SistemaSGEAController {
     private final AvaliadorService aService;
     private final CertificadoService cService;
 
-    public SistemaSGEAController(EventoRepository eventoRepository) {
-        this.pService = new ParticipanteService();
+    public SistemaSGEAController(EventoRepository eventoRepository, ParticipanteRepository participanteRepository) {
+        this.pService = new ParticipanteService(participanteRepository);
         this.iService = new InscricaoService();
         this.eService = new EventoService(eventoRepository);
         this.tService = new TrabalhoService();

@@ -4,7 +4,6 @@ import controller.SistemaSGEAController;
 import entity.Evento;
 import entity.Organizador;
 import entity.Participante;
-import org.w3c.dom.ls.LSOutput;
 import repository.EventoRepository;
 import repository.ParticipanteRepository;
 
@@ -81,14 +80,16 @@ public class View {
 
     private static void menuOrganizador(SistemaSGEAController sistema, Scanner scanner, entity.Organizador organizador) {
         boolean executando = true;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Padrão Brasil
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         while (executando) {
             System.out.println("\n=== Menu do Organizador ===");
             System.out.println("1. Criar novo evento");
             System.out.println("2. Ver eventos criados");
             System.out.println("3. Editar evento");
-            System.out.println("4. Voltar");
+            System.out.println("4. Confirmar presença dos inscritos");
+            System.out.println("5. Designar inscrito como avaliador para trabalho");
+            System.out.println("6. Voltar");
             System.out.print("Escolha uma opção: ");
             String opcao = scanner.nextLine();
 
@@ -172,8 +173,8 @@ public class View {
                     try {
                         LocalDate dataInicio = LocalDate.parse(novaDataInicio, formatter);
                         LocalDate dataFim = LocalDate.parse(novaDataFim, formatter);
-                        LocalDate InicioSubmissao = LocalDate.parse(novaDataInicio, formatter);
-                        LocalDate FimSubmissao = LocalDate.parse(novaDataFim, formatter);
+                        LocalDate InicioSubmissao = LocalDate.parse(novoInicioSubmissao, formatter);
+                        LocalDate FimSubmissao = LocalDate.parse(novoFimSubmissao, formatter);
                         sistema.editarEvento(
                                 nomeEvento,
                                 novoNome,
@@ -192,6 +193,161 @@ public class View {
                     }
                     break;
                 case "4":
+                    var eventosCriadosPresenca = sistema.listarEventosCriados(organizador);
+                    if (eventosCriadosPresenca.isEmpty()) {
+                        System.out.println("Nenhum evento criado ainda.");
+                        break;
+                    }
+                    for (int i = 0; i < eventosCriadosPresenca.size(); i++) {
+                        Evento evento = eventosCriadosPresenca.get(i);
+                        System.out.printf("%d. %s (%s a %s)\n", i + 1, evento.getNome(), evento.getDataInicio().format(formatter), evento.getDataFim().format(formatter));
+                    }
+                    System.out.print("Escolha o número do evento para confirmar presença dos inscritos (ou 0 para voltar): ");
+                    String escolhaEvento = scanner.nextLine();
+                    int idxEvento;
+                    try {
+                        idxEvento = Integer.parseInt(escolhaEvento);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Entrada inválida.");
+                        break;
+                    }
+                    if (idxEvento <= 0 || idxEvento > eventosCriadosPresenca.size()) {
+                        System.out.println("Operação cancelada.");
+                        break;
+                    }
+                    Evento eventoEscolhido = eventosCriadosPresenca.get(idxEvento - 1);
+                    var inscricoes = eventoEscolhido.getInscricoes();
+                    if (inscricoes.isEmpty()) {
+                        System.out.println("Nenhum inscrito neste evento.");
+                        break;
+                    }
+                    for (int i = 0; i < inscricoes.size(); i++) {
+                        var inscricao = inscricoes.get(i);
+                        System.out.printf("%d. %s - Presença confirmada: %s\n", i + 1, inscricao.getParticipante().getNome(), inscricao.isPresencaConfirmada() ? "Sim" : "Não");
+                    }
+                    System.out.print("Digite o número do inscrito para confirmar presença (ou 0 para voltar): ");
+                    String escolhaInscrito = scanner.nextLine();
+                    int idxInscrito;
+                    try {
+                        idxInscrito = Integer.parseInt(escolhaInscrito);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Entrada inválida.");
+                        break;
+                    }
+                    if (idxInscrito <= 0 || idxInscrito > inscricoes.size()) {
+                        System.out.println("Operação cancelada.");
+                        break;
+                    }
+                    var inscricaoEscolhida = inscricoes.get(idxInscrito - 1);
+                    try {
+                        sistema.confirmarPresencaEmEvento(inscricaoEscolhida);
+                        System.out.println("Presença confirmada com sucesso!");
+                    } catch (Exception e) {
+                        System.out.println("Erro ao confirmar presença: " + e.getMessage());
+                    }
+                    break;
+                case "5":
+                    var eventosCriadosAvaliador = sistema.listarEventosCriados(organizador);
+                    if (eventosCriadosAvaliador.isEmpty()) {
+                        System.out.println("Nenhum evento criado ainda.");
+                        break;
+                    }
+                    for (int i = 0; i < eventosCriadosAvaliador.size(); i++) {
+                        Evento evento = eventosCriadosAvaliador.get(i);
+                        System.out.printf("%d. %s (%s a %s)\n", i + 1, evento.getNome(), evento.getDataInicio().format(formatter), evento.getDataFim().format(formatter));
+                    }
+                    System.out.print("Escolha o número do evento (ou 0 para voltar): ");
+                    String escolhaEventoAvaliador = scanner.nextLine();
+                    int idxEventoAvaliador;
+                    try {
+                        idxEventoAvaliador = Integer.parseInt(escolhaEventoAvaliador);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Entrada inválida.");
+                        break;
+                    }
+                    if (idxEventoAvaliador <= 0 || idxEventoAvaliador > eventosCriadosAvaliador.size()) {
+                        System.out.println("Operação cancelada.");
+                        break;
+                    }
+                    Evento eventoEscolhidoAvaliador = eventosCriadosAvaliador.get(idxEventoAvaliador - 1);
+
+                    // Seleciona o trabalho
+                    List<entity.Trabalho> trabalhosEvento;
+                    try {
+                        trabalhosEvento = sistema.listarTrabalhoPorEvento(eventoEscolhidoAvaliador);
+                    } catch (Exception e) {
+                        System.out.println("Não foi possível listar trabalhos: " + e.getMessage());
+                        break;
+                    }
+                    if (trabalhosEvento == null || trabalhosEvento.isEmpty()) {
+                        System.out.println("Nenhum trabalho submetido para este evento.");
+                        break;
+                    }
+                    for (int i = 0; i < trabalhosEvento.size(); i++) {
+                        entity.Trabalho trabalho = trabalhosEvento.get(i);
+                        System.out.printf("%d. %s\n", i + 1, trabalho.getTitulo());
+                    }
+                    System.out.print("Escolha o número do trabalho para designar avaliador (ou 0 para voltar): ");
+                    String escolhaTrabalho = scanner.nextLine();
+                    int idxTrabalho;
+                    try {
+                        idxTrabalho = Integer.parseInt(escolhaTrabalho);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Entrada inválida.");
+                        break;
+                    }
+                    if (idxTrabalho <= 0 || idxTrabalho > trabalhosEvento.size()) {
+                        System.out.println("Operação cancelada.");
+                        break;
+                    }
+                    entity.Trabalho trabalhoEscolhido = trabalhosEvento.get(idxTrabalho - 1);
+
+                    // Seleciona o inscrito para ser avaliador
+                    var inscricoesAvaliador = eventoEscolhidoAvaliador.getInscricoes();
+                    if (inscricoesAvaliador.isEmpty()) {
+                        System.out.println("Nenhum inscrito neste evento.");
+                        break;
+                    }
+                    for (int i = 0; i < inscricoesAvaliador.size(); i++) {
+                        var inscricao = inscricoesAvaliador.get(i);
+                        System.out.printf("%d. %s (%s)\n", i + 1, inscricao.getParticipante().getNome(), inscricao.getParticipante().getEmail());
+                    }
+                    System.out.print("Digite o número do inscrito para designar como avaliador (ou 0 para voltar): ");
+                    String escolhaInscritoAvaliador = scanner.nextLine();
+                    int idxInscritoAvaliador;
+                    try {
+                        idxInscritoAvaliador = Integer.parseInt(escolhaInscritoAvaliador);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Entrada inválida.");
+                        break;
+                    }
+                    if (idxInscritoAvaliador <= 0 || idxInscritoAvaliador > inscricoesAvaliador.size()) {
+                        System.out.println("Operação cancelada.");
+                        break;
+                    }
+                    var inscricaoEscolhidaAvaliador = inscricoesAvaliador.get(idxInscritoAvaliador - 1);
+                    var participanteAvaliador = inscricaoEscolhidaAvaliador.getParticipante();
+                    try {
+                        // Verifica se já é avaliador
+                        var optAvaliador = sistema.buscarAvaliadorPorEmail(participanteAvaliador.getEmail());
+                        entity.Avaliador avaliador;
+                        if (optAvaliador.isPresent()) {
+                            avaliador = optAvaliador.get();
+                        } else {
+                            avaliador = sistema.designarAvaliadorParaEvento(eventoEscolhidoAvaliador, participanteAvaliador);
+                            System.out.println("Avaliador criado e designado ao evento.");
+                        }
+                        boolean designado = sistema.designarTrabalho(avaliador, trabalhoEscolhido);
+                        if (designado) {
+                            System.out.println("Avaliador designado para o trabalho com sucesso!");
+                        } else {
+                            System.out.println("Avaliador já estava designado para esse trabalho.");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Erro ao designar avaliador: " + e.getMessage());
+                    }
+                    break;
+                case "6":
                     executando = false;
                     break;
                 default:

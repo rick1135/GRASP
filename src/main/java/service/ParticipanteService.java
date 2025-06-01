@@ -50,23 +50,6 @@ public class ParticipanteService {
                 .findFirst();
     }
 
-    public boolean inscreverEmEvento(String emailParticipante, Evento evento){
-        Optional<Participante> participanteOpt = buscarParticipantePorEmail(emailParticipante);
-        if(participanteOpt.isPresent() && evento != null){
-            Participante participante = participanteOpt.get();
-
-            if(participante.isInscritoEmEvento(evento))
-                return false; //já inscrito
-
-            Inscricao inscricao = new Inscricao(participante, evento);
-            boolean adicionouNoParticipante = participante.adicionarInscricao(inscricao);
-            boolean adicionouNoEvento = evento.adicionarInscricao(inscricao);
-
-            return adicionouNoEvento && adicionouNoParticipante;
-        }
-        return false;
-    }
-
     public boolean cancelarInscricao(String emailParticipante, Evento evento){
         Optional<Participante> participanteOpt = buscarParticipantePorEmail(emailParticipante);
         if (participanteOpt.isPresent() && evento != null) {
@@ -84,17 +67,6 @@ public class ParticipanteService {
                 boolean cancelado = participante.cancelarInscricao(inscricao);
                 return cancelado;
             }
-        }
-        return false;
-    }
-
-    public boolean submeterTrabalho(String emailParticipante, Evento evento, Trabalho trabalho){
-        Optional<Participante> participanteOpt = buscarParticipantePorEmail(emailParticipante);
-        if(participanteOpt.isPresent()){
-            Participante participante = participanteOpt.get();
-            boolean adicionou = participante.adicionarTrabalho(trabalho);
-
-            if(adicionou) return evento.adicionarTrabalho(trabalho);
         }
         return false;
     }

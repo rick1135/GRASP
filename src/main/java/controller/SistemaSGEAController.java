@@ -23,7 +23,7 @@ public class SistemaSGEAController {
         this.iService = new InscricaoService();
         this.eService = new EventoService(eventoRepository);
         this.tService = new TrabalhoService();
-        this.oService = new OrganizadorService(eventoRepository);
+        this.oService = new OrganizadorService(eventoRepository, participanteRepository);
         this.aService = new AvaliadorService();
         this.cService = new CertificadoService(tService, pService);
     }
@@ -40,7 +40,6 @@ public class SistemaSGEAController {
         iService.criarInscricao(participante, evento);
     }
 
-    //CORRIGIR
     public void cancelarInscricaoEmEvento(Inscricao inscricao) throws Exception{
         iService.cancelarInscricao(inscricao);
     }
@@ -53,11 +52,18 @@ public class SistemaSGEAController {
         return tService.cadastrarTrabalho(titulo, autores, evento, arquivo);
     }
 
+    public List<Trabalho> listarTrabalhoPorEvento(Evento evento){
+        return eService.listarTrabalhoPorEvento(evento);
+    }
+
     public Organizador cadastrarOrganizador(Participante participante) throws Exception {
         return oService.cadastrarOrganizador(participante);
     }
 
-    //VERIFICAR COMO CRIAR EVENTO A LOGICA DOS PARAMETROS VAI TA ERRADA
+    public Optional<Organizador> buscarOrganizadorPorEmail(String email){
+        return oService.buscarOrganizadorPorEmail(email);
+    }
+
     public Evento criarEvento(Organizador organizador, String nome, String descricao, LocalDate dataInicio, LocalDate dataFim, String local,
                               int capacidadeMaxima, LocalDate dataInicioSubmissao, LocalDate dataFimSubmissao){
         return oService.criarEvento(organizador, nome, descricao, dataInicio, dataFim, local, capacidadeMaxima, dataInicioSubmissao, dataFimSubmissao);
@@ -67,18 +73,20 @@ public class SistemaSGEAController {
         return oService.listarEventosCriados(organizador);
     }
 
-    public void editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal) throws Exception {
-        eService.editarEvento(nomeEvento,novoNome,novaDescricao,novaDataInicio,novaDataFim,novoLocal);
+    public void editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal, LocalDate inicioSubmissao, LocalDate fimSubmissao) throws Exception {
+        eService.editarEvento(nomeEvento,novoNome,novaDescricao,novaDataInicio,novaDataFim,novoLocal,inicioSubmissao,fimSubmissao);
     }
 
-    //VERIFICAR ISSO AQUI
     public Avaliador designarAvaliadorParaEvento(Evento evento, Participante participante) throws Exception {
         Avaliador avaliador = aService.cadastrarAvaliador(participante);
         eService.designarAvaliador(evento, avaliador);
         return avaliador;
     }
 
-    //VERIFICAR SE O FLUXO ESTA CORRETO
+    public Optional<Avaliador> buscarAvaliadorPorEmail(String email){
+        return aService.buscarAvaliadorPorEmail(email);
+    }
+
     public void registrarAvaliacao(Avaliador avaliador, Trabalho trabalho, double nota, String comentario){
         aService.registrarAvaliacao(avaliador, trabalho, nota, comentario);
     }
@@ -87,7 +95,6 @@ public class SistemaSGEAController {
         return aService.designarTrabalho(avaliador, trabalho);
     }
 
-    //NAO ESTA SENDO VERIFICADA A PRESENÇA DO PARTICIPANTE
     public Certificado emitirCertificadoParticipacao(Participante participante, Evento evento, LocalDate dataEmissao){
         return cService.emitirCertificadoParticipacao(participante, evento, dataEmissao);
     }
@@ -103,4 +110,6 @@ public class SistemaSGEAController {
     public List<Inscricao> listarInscricoes(String emailParticipante){
         return pService.listarInscricoes(emailParticipante);
     }
+
+
 }

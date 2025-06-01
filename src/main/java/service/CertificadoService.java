@@ -43,7 +43,6 @@ public class CertificadoService {
         Certificado certificado = new Certificado(participante, evento, dataEmissao);
         certificados.add(certificado);
         participante.adicionarCertificado(certificado);
-        System.out.println("Certificado emitido com sucesso para " + participante.getNome() + " no evento " + evento.getNome());
         return certificado;
     }
 

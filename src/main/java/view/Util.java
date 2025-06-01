@@ -22,8 +22,6 @@ public class Util {
         Avaliador avaliador = designarAvaliadorParatrabalho(sistema, evento, p1);
         avaliadorRegistraAvaliacao(sistema, avaliador, trabalho, evento);
         emitirCertificadoPresenca(sistema,evento,trabalho);
-        confirmaPresenca(sistema,evento);
-
     }
 
     public static List<Participante> adicionaParticipante(SistemaSGEAController sistema){
@@ -46,11 +44,11 @@ public class Util {
                 org,
                 "Semana Acadêmica IFNMG",
                 "Evento anual com palestras e minicursos",
-                hoje.minusDays(2),
-                hoje.minusDays(2),
+                hoje.plusDays(3),
+                hoje.plusDays(4),
                 "Auditório IFNMG",
                 10,
-                hoje.plusDays(1),
+                hoje,
                 hoje.plusDays(5)
         );
         return evento;
@@ -105,6 +103,9 @@ public class Util {
     }
 
     public static void emitirCertificadoPresenca(SistemaSGEAController sistema, Evento evento, Trabalho trabalho){
+        LocalDate hoje = LocalDate.now();
+        evento.setDataFim(hoje.minusDays(1));
+
         for (Inscricao inscricao : evento.getInscricoes()) {
             try {
                 Certificado cert = sistema.emitirCertificadoParticipacao(inscricao.getParticipante(), evento, LocalDate.now());

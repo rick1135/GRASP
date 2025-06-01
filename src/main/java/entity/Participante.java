@@ -92,7 +92,7 @@ public class Participante {
     }
 
     public boolean isInscritoEmEvento(Evento evento){
-        return inscricoes.stream().anyMatch(inscricao -> inscricao.getEvento().equals(evento) && inscricao.isAtiva() || inscricao.isPresencaConfirmada());
+        return inscricoes.stream().anyMatch(inscricao -> inscricao.getEvento().equals(evento) && (inscricao.isAtiva() || inscricao.isPresencaConfirmada()));
     }
 
     public boolean removerInscricao(Inscricao inscricao){

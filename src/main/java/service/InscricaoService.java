@@ -15,15 +15,15 @@ public class InscricaoService {
         this.inscricaoRepository = new InscricaoRepository();
     }
 
-    public void criarInscricao(Participante participante, Evento evento) throws Exception {
+    public void criarInscricao(Participante participante, Evento evento) {
         if(participante == null || evento == null)
             throw new IllegalArgumentException("Os dados não podem ser nulos!");
 
         if(!evento.temVaga())
-            throw new Exception("Evento sem vagas!");
+            throw new IllegalStateException("Evento sem vagas!");
 
         if(participante.isInscritoEmEvento(evento))
-            throw new Exception("Usuario ja inscrito!");
+            throw new IllegalStateException("Usuario ja inscrito!");
 
         Inscricao inscricao = new Inscricao(participante, evento);
         inscricaoRepository.salvar(inscricao);

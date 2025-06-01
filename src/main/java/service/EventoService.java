@@ -1,28 +1,16 @@
 package service;
 
-import entity.Avaliador;
-import entity.Evento;
-import entity.Inscricao;
-import entity.Organizador;
+import entity.*;
 import repository.EventoRepository;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class EventoService {
-    private List<Evento> eventos;
     private final EventoRepository eventoRepository;
 
     public EventoService(EventoRepository eventoRepository){
         this.eventoRepository = eventoRepository;
-        this.eventos = new ArrayList<>();
-    }
-
-    public void criarEvento(Evento evento) throws Exception {
-        if(evento == null || buscarEventoPornome(evento.getNome()).isPresent()){
-            throw new Exception("Evento inválido ou já criado!");
-        }
-        eventos.add(evento);
     }
 
     public List<Evento> listarEventos(){
@@ -33,22 +21,17 @@ public class EventoService {
     }
 
     public Optional<Evento> buscarEventoPornome(String nome){
-        return eventos.stream()
+        Optional<Evento> eventos = eventoRepository.listarEventos().stream()
                 .filter(e -> e.getNome().equalsIgnoreCase(nome))
                 .findFirst();
+        if(eventoRepository.listarEventos().isEmpty())
+            throw new IllegalArgumentException("Evento não encontrado!");
+        return eventos;
     }
 
     public boolean podeInscrever(Evento evento){
         if(evento == null) return false;
         return evento.isCapacidadeDisponivel();
-    }
-
-    public boolean adicionarInscricao(Evento evento, Inscricao inscricao) throws Exception {
-        if(evento == null || inscricao == null)
-            throw new Exception("Evento ou inscrição inválidos!");
-        if(!podeInscrever(evento))
-            throw new Exception("Evento cheio!");
-        return evento.getInscricoes().add(inscricao);
     }
 
     public boolean removerInscricao(Evento evento, Inscricao inscricao) throws Exception {
@@ -57,15 +40,7 @@ public class EventoService {
         return evento.removerInscricao(inscricao);
     }
 
-    //verifica se ainda está no período para submeter trabalhos
-    public boolean validarPeriodoSubmissao(Evento evento){
-        if(evento == null) return false;
-        LocalDate hoje = LocalDate.now();
-        return (hoje.isEqual(evento.getDataInicioSubmissao()) || hoje.isAfter(evento.getDataInicioSubmissao())) &&
-                (hoje.isEqual(evento.getDataFimSubmissao()) || hoje.isBefore(evento.getDataFimSubmissao()));
-    }
-
-    public void editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal) throws Exception {
+    public void editarEvento(String nomeEvento, String novoNome, String novaDescricao, LocalDate novaDataInicio, LocalDate novaDataFim, String novoLocal, LocalDate inicioSubmissao, LocalDate fimSubmissao) throws Exception {
        Optional<Evento> eventoOpt = buscarEventoPornome(nomeEvento);
        if(!eventoOpt.isPresent()){
            throw new Exception("Evento não encontrado!");
@@ -80,10 +55,15 @@ public class EventoService {
        evento.setDataInicio(novaDataInicio);
        evento.setDataFim(novaDataFim);
        evento.setLocal(novoLocal);
-
+       evento.setDataInicioSubmissao(inicioSubmissao);
+       evento.setDataFimSubmissao(fimSubmissao);
     }
 
     public void designarAvaliador(Evento evento, Avaliador avaliador){
         evento.adicionarAvaliador(avaliador);
+    }
+
+    public List<Trabalho> listarTrabalhoPorEvento(Evento evento){
+        return evento.getTrabalhos();
     }
 }

@@ -81,13 +81,23 @@ public class Evento {
         return dataInicioSubmissao;
     }
 
+    public void setDataInicioSubmissao(LocalDate dataInicioSubmissao) {
+        this.dataInicioSubmissao = dataInicioSubmissao;
+    }
+
     public LocalDate getDataFimSubmissao() {
         return dataFimSubmissao;
+    }
+
+    public void setDataFimSubmissao(LocalDate dataFimSubmissao) {
+        this.dataFimSubmissao = dataFimSubmissao;
     }
 
     public List<Inscricao> getInscricoes() {
         return Collections.unmodifiableList(inscricoes);
     }
+
+
 
     public List<Trabalho> getTrabalhos() {
         if(trabalhos.isEmpty())
@@ -109,9 +119,13 @@ public class Evento {
         return inscricoes.size()<capacidadeMaxima;
     }
 
+    public int vagasRestantes(){
+        return capacidadeMaxima-inscricoes.size();
+    }
+
     public boolean adicionarInscricao(Inscricao inscricao){
-        if(isEventoIniciado()) return false;
-        if(!podeInscrever(inscricao)) return false;
+        if(isEventoIniciado()) throw new IllegalStateException("Evento iniciado!");
+        if(!podeInscrever(inscricao)) throw new IllegalStateException("Não foi possivel inscrever!");
         inscricoes.add(inscricao);
         return true;
     }
